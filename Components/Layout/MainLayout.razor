@@ -1,4 +1,98 @@
 ﻿@inherits LayoutComponentBase
 
+<MudThemeProvider Theme="PortfolioTheme"/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudAppBar Color="Color.Tertiary" Fixed="true" Elevation="1">
+    <MudLink Href="/" Underline="Underline.None">
+        <MudText Typo="Typo.h6" Color="Color.Secondary" Inline="true">Chase</MudText>
+        <MudText Typo="Typo.h6" Class="name-accent" Inline="true">Bonham</MudText>
+    </MudLink>
+
+    <MudSpacer />
+
+    @* Desktop Navigation *@
+    <div class="d-none d-md-flex">
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" href="#projects">Projects</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" href="#timeline">Timeline</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" href="#skills">Skills</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" href="#contact">Contact</MudButton>
+    </div>
+
+    @* Mobile Toggle Button *@
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                   Color="Color.Inherit" 
+                   Edge="Edge.End" 
+                   OnClick="@((e) => MenuOpen = !MenuOpen)" 
+                   Class="d-flex d-md-none" />
+</MudAppBar>
+
+@* Mobile Dropdown Menu *@
+<MudCollapse Expanded="MenuOpen" Class="d-md-none" Style="position: fixed; top: 64px; left: 0; right: 0; z-index: 1200;">
+    <MudPaper Square="true" Elevation="4" Class="px-4 py-2">
+        <MudNavMenu Color="Color.Tertiary" Margin="Margin.Normal">
+            <MudNavLink Href="#projects">Projects</MudNavLink>
+            <MudNavLink Href="#timeline">Timeline</MudNavLink>
+            <MudNavLink Href="#skills">Skills</MudNavLink>
+            <MudNavLink Href="#contact">Contact</MudNavLink>
+        </MudNavMenu>
+    </MudPaper>
+</MudCollapse>
+
 @Body
 
+
+@code {
+    bool MenuOpen = false;
+    
+    MudTheme PortfolioTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#01D3FE",
+            Secondary = "#E7ECF1",
+            Tertiary = "#080b10",
+            TextPrimary = "#E7ECF1",
+            TextSecondary = "#8a9aaa",
+            Background = "#080b10",
+            DrawerBackground = "#080b10"
+        },
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "DM Sans", "sans-serif" },
+                FontWeight = "300"
+            },
+            Body1 = new Body1Typography()
+            {
+                FontFamily = new[] { "DM Sans", "sans-serif" },
+                FontWeight = "300"
+            },
+            H1 = new H1Typography()
+            {
+                FontFamily = new[] { "Cabinet Grotesk", "sans-serif" },
+                FontSize = "clamp(52px, 8vw, 96px)",
+                FontWeight = "800"
+            },
+            H2 = new H2Typography()
+            {
+                FontFamily = new[] { "Cabinet Grotesk", "sans-serif" },
+                FontSize = "clamp(32px, 5vw, 52px)",
+                FontWeight = "800"
+            },
+            H6 = new H6Typography()
+            {
+                FontFamily = new[] { "Cabinet Grotesk", "sans-serif" },
+                FontWeight = "700"
+            },
+            Button = new ButtonTypography()
+            {
+                FontFamily = new[] { "JetBrains Mono", "monospace" },
+                FontSize = "12px",
+                FontWeight = "400"
+            }
+        }
+    };
+}

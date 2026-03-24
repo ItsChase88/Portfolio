@@ -1,0 +1,11 @@
+﻿<div class="d-flex align-end gap-2">
+    <MudText Typo="Typo.h3" Style="font-weight: 700;">@Number</MudText>
+    <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-bottom: 8px;">@Suffix</MudText>
+    <MudText Typo="Typo.body1" Class="mud-text-secondary ml-2" Style="margin-bottom: 8px;">@Label</MudText>
+</div>
+
+@code {
+    [Parameter] public string Number { get; set; }
+    [Parameter] public string Suffix { get; set; }
+    [Parameter] public string Label { get; set; }
+}

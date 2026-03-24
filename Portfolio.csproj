@@ -17,4 +17,9 @@
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Include="wwwroot\css\app.css" />
+  </ItemGroup>
+
 </Project>
