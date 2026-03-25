@@ -16,12 +16,11 @@ public class Project
 
     public string GitHubURL { get; set; } = string.Empty;
 
-    
-    public int ParentProjectID { get; set; }
+    public int? ParentProjectID { get; set; } = null;
     [ForeignKey("ParentProjectID")]
     public Project? ParentProject { get; set; } = null;
 
     public List<Tag> Tags { get; set; } = [];
 
-    public DateTime DatePublished;
+    public DateTime DatePublished { get; set; } = DateTime.Now;
 }

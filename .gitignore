@@ -482,3 +482,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+portfolio.db
+portfolio.db-shm
+portfolio.db-wal
