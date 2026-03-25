@@ -1,13 +1,13 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider Theme="PortfolioTheme"/>
+<MudThemeProvider IsDarkMode="true" Theme="PortfolioTheme"/>
 <MudDialogProvider />
 <MudPopoverProvider />
 <MudSnackbarProvider />
 
 <MudAppBar Color="Color.Tertiary" Fixed="true" Elevation="1">
     <MudLink Href="/" Underline="Underline.None">
-        <MudText Typo="Typo.h6" Color="Color.Secondary" Inline="true">Chase</MudText>
+        <MudText Typo="Typo.h6" Class="text-primary" Inline="true">Chase</MudText>
         <MudText Typo="Typo.h6" Class="name-accent" Inline="true">Bonham</MudText>
     </MudLink>
 
@@ -49,12 +49,14 @@
     
     MudTheme PortfolioTheme = new MudTheme()
     {
-        PaletteLight = new PaletteLight()
+        PaletteDark = new PaletteDark()
         {
             Primary = "#01D3FE",
             Secondary = "#E7ECF1",
+            Surface = "#0A0D12",
             Tertiary = "#080b10",
             TextPrimary = "#E7ECF1",
+            ActionDefault = "#E7ECF1",
             TextSecondary = "#8a9aaa",
             Background = "#080b10",
             DrawerBackground = "#080b10"

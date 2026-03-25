@@ -12,3 +12,7 @@ section {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+
+.text-primary {
+    color: var(--mud-palette-text-primary) !important;
+}

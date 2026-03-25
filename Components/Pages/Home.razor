@@ -13,7 +13,7 @@
             <MudChip T="string" Color="Color.Primary" Variant="Variant.Text" Class="ml-0 mb-4">
                 Operations & Software Development
             </MudChip>
-            <MudText Typo="Typo.h1" Style="line-height: 1;">
+            <MudText Typo="Typo.h1" Class="text-primary" Style="line-height: 1;">
                 Chase
             </MudText>
             <MudText Typo="Typo.h1" Class="name-accent">
@@ -67,8 +67,14 @@
                             </div>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Default" />
-                            <MudButton Variant="Variant.Text" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Launch">Live Demo</MudButton>
+                            @if (Project.GitHubURL != string.Empty)
+                            {
+                                <MudIconButton href="@Project.GitHubURL" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Default" />
+                            }
+                            @if (Project.URL != string.Empty)
+                            {
+                                <MudButton href="@Project.URL" Target="_blank" Variant="Variant.Text" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Launch">Link</MudButton>
+                            }
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
@@ -78,9 +84,17 @@
     
     <MudDivider Class="mt-16 opacity-20" />
     <footer class="d-flex justify-space-between align-center py-12 px-4">
-        <MudText Typo="Typo.body2" Class="mud-text-secondary">
-            © @DateTime.UtcNow.Year Chase Bonham
-        </MudText>
+        <MudItem>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                © @DateTime.UtcNow.Year Chase Bonham
+            </MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                View source code on <MudIconButton Icon="@Icons.Custom.Brands.GitHub"
+                                                   Href="https://github.com/ItsChase88/Portfolio"
+                                                   Target="_blank"
+                                                   Size="Size.Small" />
+            </MudText>
+        </MudItem>
 
         <MudLink href="#" Color="Color.Default" Underline="Underline.None" Class="d-flex align-center gap-2">
             <MudText Typo="Typo.body2">Back to top</MudText>
