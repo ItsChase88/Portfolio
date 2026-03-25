@@ -1,0 +1,30 @@
+﻿@using Portfolio.Data
+@using Microsoft.EntityFrameworkCore
+@using MudBlazor.Utilities
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@MudDialog.Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Label="Name" @bind-Value="Tag.Name" Required="true" />
+        <MudColorPicker Label="Color" Value="new MudColor(Tag.ColorHex)"
+                        ValueChanged="@((MudColor c) => Tag.ColorHex = c.Value)"
+                        Required="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public Tag Tag { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(Tag));
+}

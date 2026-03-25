@@ -71,9 +71,12 @@
                         <MudCardContent>
                             <MudText Typo="Typo.body2">@Project.Description</MudText>
                             <div class="d-flex flex-wrap gap-2 mt-4">
-                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Info">Python</MudChip>
-                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">Kubernetes</MudChip>
-                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary">ML</MudChip>
+                                @foreach(Tag tag in Project.Tags)
+                                {
+                                    <MudChip T="string" Variant="Variant.Text" Style="@($"color: {tag.ColorHex} !important; border: 1px solid {tag.ColorHex} !important;")" Size="Size.Small">
+                                        @tag.Name
+                                    </MudChip>
+                                }
                             </div>
                         </MudCardContent>
                         <MudCardActions>

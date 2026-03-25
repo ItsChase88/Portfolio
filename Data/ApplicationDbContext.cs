@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 
 namespace Portfolio.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

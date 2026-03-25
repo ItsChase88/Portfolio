@@ -26,7 +26,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Components\Admin\Tags\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

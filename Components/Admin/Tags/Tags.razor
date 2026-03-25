@@ -1,0 +1,108 @@
+﻿@page "/admin/tags"
+@using Portfolio.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <MudText Typo="Typo.h4" Class="mb-4">Tag Management</MudText>
+
+    <MudDataGrid Items="@_tags" T="Tag" Hover="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">All Tags</MudText>
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick="@((e) => OpenDialog(new Tag()))">
+                Add Tag
+            </MudButton>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.Name" Title="Name" />
+            <TemplateColumn Title="ColorHex">
+                <CellTemplate>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        @* The Color Box *@
+                        <div style="width: 20px; height: 20px; border-radius: 4px; border: 1px solid #ccc;
+                                background-color: @context.Item.ColorHex;">
+                        </div>
+                        @* The Color Code/Name *@
+                        <span>@context.Item.ColorHex</span>
+                    </div>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Edit"
+                                   OnClick="@((e) => OpenDialog(context.Item))" />
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                   OnClick="@((e) => DeleteTag(context.Item))" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    private List<Tag> _tags = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTags();
+    }
+
+    private async Task LoadTags()
+    {
+        using var context = DbFactory.CreateDbContext();
+        _tags = await context.Tags.ToListAsync();
+    }
+
+    private async Task OpenDialog(Tag tag)
+    {
+        var parameters = new DialogParameters<TagDialog> { { x => x.Tag, tag } };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<TagDialog>(tag.ID == 0 ? "Add Tag" : "Edit Tag", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is Tag updatedTag)
+        {
+            await SaveTag(updatedTag);
+        }
+    }
+
+    private async Task SaveTag(Tag tag)
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        if (tag.ID == 0)
+        {
+            context.Tags.Add(tag);
+            Snackbar.Add("Tag added successfully!", Severity.Success);
+        }
+        else
+        {
+            context.Tags.Update(tag);
+            Snackbar.Add("Tag updated successfully!", Severity.Success);
+        }
+
+        await context.SaveChangesAsync();
+        await LoadTags();
+    }
+
+    private async Task DeleteTag(Tag tag)
+    {
+        bool? confirm = await DialogService.ShowMessageBox("Delete Tag",
+            $"Are you sure you want to delete {tag.Name}?", "Delete", "Cancel");
+
+        if (confirm == true)
+        {
+            using var context = DbFactory.CreateDbContext();
+            context.Tags.Remove(tag);
+            await context.SaveChangesAsync();
+            await LoadTags();
+            Snackbar.Add("Tag deleted.", Severity.Info);
+        }
+    }
+}

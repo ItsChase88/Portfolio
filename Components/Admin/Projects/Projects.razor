@@ -47,7 +47,7 @@
     private async Task LoadProjects()
     {
         using var context = DbFactory.CreateDbContext();
-        _projects = await context.Projects.Include(x => x.ParentProject).ToListAsync();
+        _projects = await context.Projects.Include(x => x.ParentProject).Include(x => x.Tags).ToListAsync();
     }
 
     private async Task OpenDialog(Project project)

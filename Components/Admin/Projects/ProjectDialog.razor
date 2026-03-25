@@ -1,4 +1,5 @@
-﻿@using Portfolio.Data
+﻿@using MudBlazor.Utilities
+@using Portfolio.Data
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 
@@ -17,6 +18,22 @@
                 <MudSelectItem T="int?" Value="@project.ID">@project.Name</MudSelectItem>
             }
         </MudSelect>
+        <MudSelect T="int" Label="Tags" MultiSelection="true" @bind-SelectedValues="_selectedTagIds">
+            <SelectValuePresenter>
+                <div class="d-flex flex-wrap gap-1">
+                    @foreach (var id in _selectedTagIds)
+                    {
+                        <MudChip T="string" Variant="Variant.Text" Style="@($"color: {_availableTags.FirstOrDefault(x => x.ID == id)?.ColorHex}; border: 1px solid {_availableTags.FirstOrDefault(x => x.ID == id)?.ColorHex};")" Size="Size.Small">
+                            @(_availableTags.FirstOrDefault(x => x.ID == id)?.Name)
+                        </MudChip>
+                    }
+                </div>
+            </SelectValuePresenter>
+            @foreach (var tag in _availableTags)
+            {
+                <MudSelectItem T="int" Value="@tag.ID">@tag.Name</MudSelectItem>
+            }
+        </MudSelect>
         <MudDatePicker Label="Date Published" @bind-Date="DateProperty" />
     </DialogContent>
     <DialogActions>
@@ -30,8 +47,10 @@
 
     [Parameter] public Project Project { get; set; } = new();
 
-    private IEnumerable<int> _options = new HashSet<int>();
     private List<Project> _parentProjectOptions = new();
+
+    private List<Tag> _availableTags = new();
+    private IEnumerable<int> _selectedTagIds = new HashSet<int>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,6 +59,13 @@
                                     .Include(x => x.ParentProject)
                                     .Where(x => x.ID != Project.ID)
                                     .ToListAsync();
+
+        _availableTags = await context.Tags.ToListAsync();
+
+        if (Project.Tags != null)
+        {
+            _selectedTagIds = new HashSet<int>(Project.Tags.Select(t => t.ID));
+        }
     }
 
     private DateTime? DateProperty
@@ -50,5 +76,12 @@
 
     private void Cancel() => MudDialog.Cancel();
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(Project));
+    private void Submit()
+    {
+        Project.Tags = _availableTags
+                        .Where(t => _selectedTagIds.Contains(t.ID))
+                        .ToList();
+
+        MudDialog.Close(DialogResult.Ok(Project));
+    }
 }
