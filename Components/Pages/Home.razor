@@ -54,10 +54,18 @@
                     <MudCard Elevation="4" Class="pa-4" Style="height: 100%; border-top: 4px solid var(--mud-palette-primary);">
                         <MudCardHeader>
                             <CardHeaderContent>
-                                <MudText Typo="Typo.caption">
-                                    @Project.ID.ToString("D3") @if(Project.ParentProject != null) { <text> - <MudText Typo="Typo.caption" class="name-accent">@Project.ParentProject.Name</MudText></text> }
-                                </MudText>
-                                <MudText Typo="Typo.h5">@Project.Name</MudText>
+                                <MudGrid Justify="Justify.SpaceBetween">
+                                    <MudItem>
+                                        <MudText Typo="Typo.caption">
+                                            @Project.ID.ToString("D3")
+                                            @if(Project.ParentProject != null) {
+                                                <text> - <MudText Typo="Typo.caption" class="name-accent">@Project.ParentProject.Name</MudText></text>
+                                            }
+                                        </MudText>
+                                        <MudText Typo="Typo.h5">@Project.Name</MudText>
+                                    </MudItem>
+                                    <MudText Typo="Typo.caption">@Project.DatePublished.ToString("MM/dd/yyyy")</MudText>
+                                </MudGrid>
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent>
