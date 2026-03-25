@@ -20,9 +20,9 @@
         </ToolBarContent>
         <Columns>
             <PropertyColumn Property="x => x.Name" Title="Name" />
-            <PropertyColumn Property="x => x.Description" Title="Description" />
+            <PropertyColumn Property="x => x.ParentProject!.Name" Title="Parent Project" />
             <PropertyColumn Property="x => x.URL" Title="Link" />
-            <PropertyColumn Property="x => x.GitHubURL" Title="Link" />
+            <PropertyColumn Property="x => x.GitHubURL" Title="Github" />
             <PropertyColumn Property="x => x.DatePublished" Format="MM/dd/yyyy" Title="Date Published" />
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
@@ -47,7 +47,7 @@
     private async Task LoadProjects()
     {
         using var context = DbFactory.CreateDbContext();
-        _projects = await context.Projects.ToListAsync();
+        _projects = await context.Projects.Include(x => x.ParentProject).ToListAsync();
     }
 
     private async Task OpenDialog(Project project)

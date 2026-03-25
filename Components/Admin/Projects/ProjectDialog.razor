@@ -1,4 +1,6 @@
 ﻿@using Portfolio.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
 
 <MudDialog>
     <TitleContent>
@@ -9,6 +11,12 @@
         <MudTextField Label="Description" @bind-Value="Project.Description" Lines="3" />
         <MudTextField Label="Demo URL" @bind-Value="Project.URL" />
         <MudTextField Label="GitHub URL" @bind-Value="Project.GitHubURL" />
+        <MudSelect T="int?" Label="Parent Project" @bind-Value="Project.ParentProjectID">
+            @foreach (var project in _parentProjectOptions)
+            {
+                <MudSelectItem T="int?" Value="@project.ID">@project.Name</MudSelectItem>
+            }
+        </MudSelect>
         <MudDatePicker Label="Date Published" @bind-Date="DateProperty" />
     </DialogContent>
     <DialogActions>
@@ -21,6 +29,18 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter] public Project Project { get; set; } = new();
+
+    private IEnumerable<int> _options = new HashSet<int>();
+    private List<Project> _parentProjectOptions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        _parentProjectOptions = await context.Projects
+                                    .Include(x => x.ParentProject)
+                                    .Where(x => x.ID != Project.ID)
+                                    .ToListAsync();
+    }
 
     private DateTime? DateProperty
     {

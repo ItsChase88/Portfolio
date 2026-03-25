@@ -54,7 +54,9 @@
                     <MudCard Elevation="4" Class="pa-4" Style="height: 100%; border-top: 4px solid var(--mud-palette-primary);">
                         <MudCardHeader>
                             <CardHeaderContent>
-                                <MudText Typo="Typo.caption">@Project.ID.ToString("D3")</MudText>
+                                <MudText Typo="Typo.caption">
+                                    @Project.ID.ToString("D3") @if(Project.ParentProject != null) { <text> - <MudText Typo="Typo.caption" class="name-accent">@Project.ParentProject.Name</MudText></text> }
+                                </MudText>
                                 <MudText Typo="Typo.h5">@Project.Name</MudText>
                             </CardHeaderContent>
                         </MudCardHeader>
@@ -67,11 +69,11 @@
                             </div>
                         </MudCardContent>
                         <MudCardActions>
-                            @if (Project.GitHubURL != string.Empty)
+                            @if (!string.IsNullOrWhiteSpace(Project.GitHubURL))
                             {
                                 <MudIconButton href="@Project.GitHubURL" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Default" />
                             }
-                            @if (Project.URL != string.Empty)
+                            @if (!string.IsNullOrWhiteSpace(Project.URL))
                             {
                                 <MudButton href="@Project.URL" Target="_blank" Variant="Variant.Text" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Launch">Link</MudButton>
                             }
