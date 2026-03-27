@@ -68,6 +68,11 @@
     {
         using var context = DbFactory.CreateDbContext();
 
+        foreach (var tag in project.Tags)
+        {
+            context.Tags.Attach(tag);
+        }
+
         if (project.ID == 0)
         {
             context.Projects.Add(project);

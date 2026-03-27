@@ -131,6 +131,6 @@
     private async Task LoadProjects()
     {
         using var context = DbFactory.CreateDbContext();
-        _projects = await context.Projects.ToListAsync();
+        _projects = await context.Projects.Include(p => p.Tags).ToListAsync();
     }
 }
