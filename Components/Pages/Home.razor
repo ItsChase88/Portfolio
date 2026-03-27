@@ -34,7 +34,7 @@
         
         <MudItem xs="12" md="4" Class="d-flex flex-column justify-center">
             <div class="d-flex flex-column gap-8">
-                <StatItem Number="0" Suffix="+" Label="Projects" />
+                <StatItem Number="@_projects.Count().ToString()" Suffix="+" Label="Projects" />
                 <StatItem Number="@yearsOfExperience" Suffix="years" Label="Experience" />
             </div>
         </MudItem>
