@@ -80,8 +80,26 @@
         }
         else
         {
-            context.Projects.Update(project);
-            Snackbar.Add("Project updated successfully!", Severity.Success);
+            var existingProject = await context.Projects
+                .Include(p => p.Tags)
+                .FirstOrDefaultAsync(p => p.ID == project.ID);
+
+            if (existingProject != null)
+            {
+                context.Entry(existingProject).CurrentValues.SetValues(project);
+
+                existingProject.Tags.Clear();
+                foreach (var tag in project.Tags)
+                {
+                    var trackedTag = await context.Tags.FindAsync(tag.ID);
+                    if (trackedTag != null)
+                    {
+                        existingProject.Tags.Add(trackedTag);
+                    }
+                }
+
+                Snackbar.Add("Project updated successfully!", Severity.Success);
+            }
         }
 
         await context.SaveChangesAsync();
