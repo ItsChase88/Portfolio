@@ -1,3 +1,20 @@
 ﻿@inherits LayoutComponentBase
 @layout MainLayout
 
+<MudDrawerContainer Class="mud-height-full">
+    <MudDrawer @bind-Open="drawerOpen" Elevation="0" Variant="@DrawerVariant.Persistent">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6" Color="@Color.Secondary">Admin Menu</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="/admin/projects" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Checklist" IconColor="Color.Inherit">Projects</MudNavLink>
+            <MudNavLink Href="/admin/tags" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit">Tags</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+</MudDrawerContainer>
+
+@Body
+
+@code {
+    public bool drawerOpen = true;
+}
