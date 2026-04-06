@@ -1,0 +1,52 @@
+﻿@using MudBlazor.Utilities
+@using Portfolio.Data
+@using Microsoft.EntityFrameworkCore
+@using System.Reflection
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@MudDialog.Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Label="Title" @bind-Value="MilestoneType.Name" Required="true" />
+        <MudSelect T="string" Label="Icon" @bind-Value="MilestoneType.Icon">
+            @foreach (var Icon in icons)
+            {
+                <MudSelectItem T="string" Value="@Icon.Value">
+                    <MudIcon Icon="@Icon.Value" /> @Icon.Key
+                </MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public MilestoneType MilestoneType { get; set; } = new();
+
+    private Dictionary<string, string> icons = new();
+
+    protected override void OnInitialized()
+    {
+        icons = typeof(Icons.Material.Filled)
+        .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+        .Where(f => f.IsLiteral && !f.IsInitOnly)
+        .ToDictionary(
+            f => f.Name,
+            f => f.GetValue(null)?.ToString() ?? string.Empty
+        );
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(MilestoneType));
+    }
+}
