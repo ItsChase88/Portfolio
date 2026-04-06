@@ -209,6 +209,72 @@ namespace Portfolio.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Portfolio.Data.Milestone", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DateEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DateStart")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MilestoneTypeID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Subtitle")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MilestoneTypeID");
+
+                    b.ToTable("Milestones");
+                });
+
+            modelBuilder.Entity("Portfolio.Data.MilestoneType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("MilestoneTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Icon = "<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3 1 9l11 6 9-4.91V17h2V9L12 3z\"/>",
+                            Name = "School"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Icon = "<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z\"/>",
+                            Name = "Work"
+                        });
+                });
+
             modelBuilder.Entity("Portfolio.Data.Project", b =>
                 {
                     b.Property<int>("ID")
@@ -329,6 +395,17 @@ namespace Portfolio.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Portfolio.Data.Milestone", b =>
+                {
+                    b.HasOne("Portfolio.Data.MilestoneType", "milestoneType")
+                        .WithMany("Milestones")
+                        .HasForeignKey("MilestoneTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("milestoneType");
+                });
+
             modelBuilder.Entity("Portfolio.Data.Project", b =>
                 {
                     b.HasOne("Portfolio.Data.Project", "ParentProject")
@@ -351,6 +428,11 @@ namespace Portfolio.Migrations
                         .HasForeignKey("TagsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Portfolio.Data.MilestoneType", b =>
+                {
+                    b.Navigation("Milestones");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Portfolio.Migrations
 {
     /// <inheritdoc />
@@ -48,6 +50,20 @@ namespace Portfolio.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MilestoneTypes",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MilestoneTypes", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,6 +210,30 @@ namespace Portfolio.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Milestones",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Subtitle = table.Column<string>(type: "TEXT", nullable: false),
+                    MilestoneTypeID = table.Column<int>(type: "INTEGER", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    DateStart = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DateEnd = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Milestones", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Milestones_MilestoneTypes_MilestoneTypeID",
+                        column: x => x.MilestoneTypeID,
+                        principalTable: "MilestoneTypes",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProjectTag",
                 columns: table => new
                 {
@@ -215,6 +255,15 @@ namespace Portfolio.Migrations
                         principalTable: "Tags",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "MilestoneTypes",
+                columns: new[] { "ID", "Icon", "Name" },
+                values: new object[,]
+                {
+                    { 1, "<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3 1 9l11 6 9-4.91V17h2V9L12 3z\"/>", "School" },
+                    { 2, "<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z\"/>", "Work" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -255,6 +304,11 @@ namespace Portfolio.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Milestones_MilestoneTypeID",
+                table: "Milestones",
+                column: "MilestoneTypeID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Projects_ParentProjectID",
                 table: "Projects",
                 column: "ParentProjectID");
@@ -284,6 +338,9 @@ namespace Portfolio.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Milestones");
+
+            migrationBuilder.DropTable(
                 name: "ProjectTag");
 
             migrationBuilder.DropTable(
@@ -291,6 +348,9 @@ namespace Portfolio.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "MilestoneTypes");
 
             migrationBuilder.DropTable(
                 name: "Projects");

@@ -17,8 +17,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         // Seed our MilestoneTypes
         modelBuilder.Entity<MilestoneType>().HasData(
-            new MilestoneType { ID = 1, Name = "School", Icon = Icons.Material.Filled.School },
-            new MilestoneType { ID = 2, Name = "Work", Icon = Icons.Material.Filled.Work }
+            new MilestoneType { ID = 1, Name = "Education", Icon = Icons.Material.Filled.School },
+            new MilestoneType { ID = 2, Name = "Experience", Icon = Icons.Material.Filled.Work }
         );
     }
 }

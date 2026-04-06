@@ -95,6 +95,56 @@
         </MudGrid>
     </section>
 
+    <section id="timeline" class="mt-16">
+        <div class="d-flex align-center mb-8">
+            <MudText Typo="Typo.h6" Class="mr-4" Style="opacity: 0.5;">02</MudText>
+            <MudText Typo="Typo.h3">Timeline</MudText>
+            <MudDivider Class="flex-grow-1 ml-4" DividerType="DividerType.Middle" />
+        </div>
+
+        <MudTimeline TimelinePosition="TimelinePosition.Start">
+            @foreach (var Milestone in _milestones)
+            {
+                <MudTimelineItem Color="@(Milestone.DateEnd == null ? Color.Primary : Color.Secondary)"
+                                 Size="Size.Small"
+                                 Variant="Variant.Filled">
+                    <ItemContent>
+                        <MudPaper Elevation="0" Class="pa-4 mud-background-gray">
+                            <div class="d-flex align-center justify-space-between mb-2">
+                                <div class="d-flex align-center">
+                                    <MudIcon Icon="@Milestone.milestoneType.Icon"
+                                             Size="Size.Small"
+                                             Class="mr-2" />
+                                    <MudChip T="string"
+                                             Size="Size.Small"
+                                             Color="@(Milestone.DateEnd == null ? Color.Primary : Color.Secondary)"
+                                             Variant="Variant.Text"
+                                             Class="ma-0">
+                                        @Milestone.milestoneType.Name
+                                    </MudChip>
+                                </div>
+
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary font-weight-bold">
+                                    @Milestone.DateStart?.ToString("MMM yyyy")@((Milestone.DateEnd.HasValue) ? $" — {Milestone.DateEnd.Value.ToString("MMM yyyy")}" : " — Present")
+                                </MudText>
+                            </div>
+
+                            <MudText Typo="Typo.h6">@Milestone.Title</MudText>
+                            <MudText Typo="Typo.subtitle2" Class="mud-text-secondary">@Milestone.Subtitle</MudText>
+
+                            @if (!string.IsNullOrEmpty(Milestone.Description))
+                            {
+                                <MudText Typo="Typo.body2" Class="mt-2">
+                                    @Milestone.Description
+                                </MudText>
+                            }
+                        </MudPaper>
+                    </ItemContent>
+                </MudTimelineItem>
+            }
+        </MudTimeline>
+    </section>
+
     <section id="contact" class="mt-16 py-16">
         <div class="d-flex align-center mb-8">
             <MudText Typo="Typo.h6" Class="mr-4" Style="opacity: 0.5;">04</MudText>
@@ -184,15 +234,16 @@
     private String yearsOfExperience = (DateTime.UtcNow.Year - 2021).ToString();
 
     private List<Project> _projects = new();
+    private List<Milestone> _milestones = new();
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadProjects();
-    }
-
-    private async Task LoadProjects()
-    {
         using var context = DbFactory.CreateDbContext();
         _projects = await context.Projects.Include(p => p.Tags).ToListAsync();
+        _milestones = await context.Milestones
+            .Include(p => p.milestoneType)
+            .OrderByDescending(p => p.DateEnd == null)
+            .ThenByDescending(p => p.DateEnd)
+            .ToListAsync();
     }
 }
