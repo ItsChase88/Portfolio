@@ -7,11 +7,12 @@
             <MudText Typo="Typo.h6" Color="@Color.Secondary">Admin Menu</MudText>
         </MudDrawerHeader>
         <MudNavMenu>
+            <MudNavLink Href="/admin/resumes" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ContactPage" IconColor="Color.Inherit">Resumes</MudNavLink>
+            <MudDivider/>
             <MudNavLink Href="/admin/projects" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Checklist" IconColor="Color.Inherit">Projects</MudNavLink>
             <MudNavLink Href="/admin/tags" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit">Tags</MudNavLink>
             <MudNavLink Href="/admin/milestones" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Timeline" IconColor="Color.Inherit">Milestones</MudNavLink>
             <MudNavLink Href="/admin/milestonetypes" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Label" IconColor="Color.Inherit">Milestone Types</MudNavLink>
-            
         </MudNavMenu>
     </MudDrawer>
 </MudDrawerContainer>
