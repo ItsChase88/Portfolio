@@ -47,52 +47,62 @@
             <MudDivider Class="flex-grow-1 ml-4" DividerType="DividerType.Middle" />
         </div>
 
-        <MudGrid Class="mt-4">
-            @foreach (var Project in _projects)
-            {
-                <MudItem xs="12" md="6">
-                    <MudCard Elevation="4" Class="pa-4" Style="height: 100%; border-top: 4px solid var(--mud-palette-primary);">
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudGrid Justify="Justify.SpaceBetween">
-                                    <MudItem>
-                                        <MudText Typo="Typo.caption">
-                                            @Project.ID.ToString("D3")
-                                            @if(Project.ParentProject != null) {
-                                                <text> - <MudText Typo="Typo.caption" class="name-accent">@Project.ParentProject.Name</MudText></text>
-                                            }
-                                        </MudText>
-                                        <MudText Typo="Typo.h5">@Project.Name</MudText>
-                                    </MudItem>
-                                    <MudText Typo="Typo.caption">@Project.DatePublished.ToString("MM/dd/yyyy")</MudText>
-                                </MudGrid>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body2">@Project.Description</MudText>
-                            <div class="d-flex flex-wrap gap-2 mt-4">
-                                @foreach(Tag tag in Project.Tags)
+        @if (_projects.Count() > 0)
+        {
+            <MudGrid Class="mt-4">
+                @foreach (var Project in _projects)
+                {
+                    <MudItem xs="12" md="6">
+                        <MudCard Elevation="4" Class="pa-4" Style="height: 100%; border-top: 4px solid var(--mud-palette-primary);">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudGrid Justify="Justify.SpaceBetween">
+                                        <MudItem>
+                                            <MudText Typo="Typo.caption">
+                                                @Project.ID.ToString("D3")
+                                                @if (Project.ParentProject != null)
+                                                {
+                                                    <text> - <MudText Typo="Typo.caption" class="name-accent">@Project.ParentProject.Name</MudText></text>
+                                                }
+                                            </MudText>
+                                            <MudText Typo="Typo.h5">@Project.Name</MudText>
+                                        </MudItem>
+                                        <MudText Typo="Typo.caption">@Project.DatePublished.ToString("MM/dd/yyyy")</MudText>
+                                    </MudGrid>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body2">@Project.Description</MudText>
+                                <div class="d-flex flex-wrap gap-2 mt-4">
+                                    @foreach (Tag tag in Project.Tags)
+                                    {
+                                        <MudChip T="string" Variant="Variant.Text" Style="@($"color: {tag.ColorHex} !important; border: 1px solid {tag.ColorHex} !important;")" Size="Size.Small">
+                                            @tag.Name
+                                        </MudChip>
+                                    }
+                                </div>
+                            </MudCardContent>
+                            <MudCardActions>
+                                @if (!string.IsNullOrWhiteSpace(Project.GitHubURL))
                                 {
-                                    <MudChip T="string" Variant="Variant.Text" Style="@($"color: {tag.ColorHex} !important; border: 1px solid {tag.ColorHex} !important;")" Size="Size.Small">
-                                        @tag.Name
-                                    </MudChip>
+                                    <MudIconButton href="@Project.GitHubURL" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Default" />
                                 }
-                            </div>
-                        </MudCardContent>
-                        <MudCardActions>
-                            @if (!string.IsNullOrWhiteSpace(Project.GitHubURL))
-                            {
-                                <MudIconButton href="@Project.GitHubURL" Target="_blank" Icon="@Icons.Custom.Brands.GitHub" Color="Color.Default" />
-                            }
-                            @if (!string.IsNullOrWhiteSpace(Project.URL))
-                            {
-                                <MudButton href="@Project.URL" Target="_blank" Variant="Variant.Text" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Launch">Link</MudButton>
-                            }
-                        </MudCardActions>
-                    </MudCard>
-                </MudItem>
-            }
-        </MudGrid>
+                                @if (!string.IsNullOrWhiteSpace(Project.URL))
+                                {
+                                    <MudButton href="@Project.URL" Target="_blank" Variant="Variant.Text" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Launch">Link</MudButton>
+                                }
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        } else
+        {
+            <MudText>
+                Currently no projects. Add some in the <MudLink Href="/admin/projects">admin panel</MudLink>.
+            </MudText>
+        }
+
     </section>
 
     <section id="timeline" class="mt-16">
@@ -204,7 +214,13 @@
                                 </MudItem>
                                 <MudItem xs="12" sm="11">
                                     <MudText Typo="Typo.h6">RESUME</MudText>
-                                    <MudLink Href="path_to_resume.pdf" Target="_blank">Download PDF</MudLink>
+                                    @if (latestResume != null)
+                                    {
+                                        <MudLink Href="@latestResume.File" Target="_blank">Download PDF</MudLink>
+                                    } else
+                                    {
+                                        <MudText>No Resumes Available</MudText>
+                                    }
                                 </MudItem>
                             </MudGrid>
                         </MudCardContent>
@@ -243,15 +259,21 @@
 
     private List<Project> _projects = new();
     private List<Milestone> _milestones = new();
+    private Resume? latestResume = new();
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
         _projects = await context.Projects.Include(p => p.Tags).ToListAsync();
+        
         _milestones = await context.Milestones
             .Include(p => p.milestoneType)
             .OrderByDescending(p => p.DateEnd == null)
             .ThenByDescending(p => p.DateEnd)
             .ToListAsync();
+
+        latestResume = await context.Resumes
+            .OrderByDescending(r => r.ID)
+            .FirstOrDefaultAsync();
     }
 }

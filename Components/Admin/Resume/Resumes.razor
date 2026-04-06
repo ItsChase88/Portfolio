@@ -1,0 +1,103 @@
+﻿@page "/admin/resumes"
+@using Portfolio.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <MudText Typo="Typo.h4" Class="mb-4">Resume Management</MudText>
+
+    <MudDataGrid Items="@_Resumes" T="Resume" Hover="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">All Resumes</MudText>
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick="@((e) => OpenDialog(new Resume()))">
+                Add Resume
+            </MudButton>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.ID" Title="Resume Version" />
+            <TemplateColumn Title="Resume Link">
+                <CellTemplate>
+                    <MudText>
+                        <MudLink Href="@context.Item.File" Target="_blank">Resume Link</MudLink>
+                    </MudText>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Edit"
+                                   OnClick="@((e) => OpenDialog(context.Item))" />
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                   OnClick="@((e) => DeleteResume(context.Item))" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    private List<Resume> _Resumes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadResumes();
+    }
+
+    private async Task LoadResumes()
+    {
+        using var context = DbFactory.CreateDbContext();
+        _Resumes = await context.Resumes.ToListAsync();
+    }
+
+    private async Task OpenDialog(Resume Resume)
+    {
+        var parameters = new DialogParameters<ResumeDialog> { { x => x.Resume, Resume } };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<ResumeDialog>(Resume.ID == 0 ? "Add MilestoneType" : "Edit MilestoneType", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is Resume updatedResume)
+        {
+            await SaveResume(updatedResume);
+        }
+    }
+
+    private async Task SaveResume(Resume Resume)
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        if (Resume.ID == 0)
+        {
+            context.Resumes.Add(Resume);
+            Snackbar.Add("Resume added successfully!", Severity.Success);
+        }
+        else
+        {
+            context.Resumes.Update(Resume);
+            Snackbar.Add("Resume updated successfully!", Severity.Success);
+        }
+
+        await context.SaveChangesAsync();
+        await LoadResumes();
+    }
+
+    private async Task DeleteResume(Resume Resume)
+    {
+        bool? confirm = await DialogService.ShowMessageBox("Delete MilestoneType",
+            $"Are you sure you want to delete {Resume.ID}?", "Delete", "Cancel");
+
+        if (confirm == true)
+        {
+            using var context = DbFactory.CreateDbContext();
+            context.Resumes.Remove(Resume);
+            await context.SaveChangesAsync();
+            await LoadResumes();
+            Snackbar.Add("Resume deleted.", Severity.Info);
+        }
+    }
+}
