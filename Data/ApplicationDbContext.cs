@@ -11,6 +11,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Milestone> Milestones { get; set; }
     public DbSet<MilestoneType> MilestoneTypes { get; set; }
 
+    public DbSet<Resume> Resumes { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
