@@ -1,0 +1,101 @@
+﻿@page "/admin/milestonetypes"
+@using Portfolio.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <MudText Typo="Typo.h4" Class="mb-4">Milestone Type Management</MudText>
+
+    <MudDataGrid Items="@_MilestoneTypes" T="MilestoneType" Hover="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">All MilestoneTypes</MudText>
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick="@((e) => OpenDialog(new MilestoneType()))">
+                Add MilestoneType
+            </MudButton>
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.Name" Title="Title" />
+            <TemplateColumn Title="Icon">
+                <CellTemplate>
+                    <MudIcon Icon="@context.Item.Icon" />
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Edit"
+                                   OnClick="@((e) => OpenDialog(context.Item))" />
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                   OnClick="@((e) => DeleteMilestoneType(context.Item))" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    private List<MilestoneType> _MilestoneTypes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMilestoneTypes();
+    }
+
+    private async Task LoadMilestoneTypes()
+    {
+        using var context = DbFactory.CreateDbContext();
+        _MilestoneTypes = await context.MilestoneTypes.ToListAsync();
+    }
+
+    private async Task OpenDialog(MilestoneType MilestoneType)
+    {
+        var parameters = new DialogParameters<MilestoneTypeDialog> { { x => x.MilestoneType, MilestoneType } };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<MilestoneTypeDialog>(MilestoneType.ID == 0 ? "Add MilestoneType" : "Edit MilestoneType", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is MilestoneType updatedMilestoneType)
+        {
+            await SaveMilestoneType(updatedMilestoneType);
+        }
+    }
+
+    private async Task SaveMilestoneType(MilestoneType MilestoneType)
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        if (MilestoneType.ID == 0)
+        {
+            context.MilestoneTypes.Add(MilestoneType);
+            Snackbar.Add("MilestoneType added successfully!", Severity.Success);
+        }
+        else
+        {
+            context.MilestoneTypes.Update(MilestoneType);
+            Snackbar.Add("MilestoneType updated successfully!", Severity.Success);
+        }
+
+        await context.SaveChangesAsync();
+        await LoadMilestoneTypes();
+    }
+
+    private async Task DeleteMilestoneType(MilestoneType MilestoneType)
+    {
+        bool? confirm = await DialogService.ShowMessageBox("Delete MilestoneType",
+            $"Are you sure you want to delete {MilestoneType.Name}?", "Delete", "Cancel");
+
+        if (confirm == true)
+        {
+            using var context = DbFactory.CreateDbContext();
+            context.MilestoneTypes.Remove(MilestoneType);
+            await context.SaveChangesAsync();
+            await LoadMilestoneTypes();
+            Snackbar.Add("MilestoneType deleted.", Severity.Info);
+        }
+    }
+}

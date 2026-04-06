@@ -16,6 +16,6 @@ public class Milestone
     public MilestoneType milestoneType { get; set; } = null!;
     public string? Description { get; set; }
 
-    public int YearStart { get; set; }
-    public int? YearEnd { get; set; }
+    public DateTime? DateStart { get; set; }
+    public DateTime? DateEnd { get; set; }
 }

@@ -1,0 +1,48 @@
+﻿@using MudBlazor.Utilities
+@using Portfolio.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@MudDialog.Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Label="Title" @bind-Value="Milestone.Title" Required="true" />
+        <MudTextField Label="Subtitle" @bind-Value="Milestone.Subtitle" Required="true" />
+        <MudTextField Label="Description" @bind-Value="Milestone.Description" Lines="3" />
+        <MudSelect T="int" Label="Milestone Type" @bind-Value="Milestone.MilestoneTypeID">
+            @foreach (var milestone in _milestoneTypeOptions)
+            {
+                <MudSelectItem T="int" Value="@milestone.ID">@milestone.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudDatePicker Label="Start Year" @bind-Date="Milestone.DateStart" />
+        <MudDatePicker Label="End Year" @bind-Date="Milestone.DateEnd" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public Milestone Milestone { get; set; } = new();
+
+    private List<MilestoneType> _milestoneTypeOptions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        _milestoneTypeOptions = await context.MilestoneTypes.ToListAsync();
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(Milestone));
+    }
+}
