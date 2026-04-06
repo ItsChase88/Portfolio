@@ -13,7 +13,7 @@
         <MudSelect T="string" Label="Icon" @bind-Value="MilestoneType.Icon">
             @foreach (var Icon in icons)
             {
-                <MudSelectItem T="string" Value="@Icon.Key">
+                <MudSelectItem T="string" Value="@Icon.Value">
                     <MudIcon Icon="@Icon.Value" /> @Icon.Key
                 </MudSelectItem>
             }
